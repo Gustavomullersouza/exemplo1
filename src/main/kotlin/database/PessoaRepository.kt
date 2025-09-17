@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PessoaRepository : JpaRepository<Pessoa, Long> {aaaa
-    
+
 }
