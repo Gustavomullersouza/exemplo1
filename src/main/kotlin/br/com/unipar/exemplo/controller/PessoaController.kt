@@ -3,7 +3,9 @@ package br.com.unipar.exemplo.controller
 import br.com.unipar.exemplo.database.PessoaRepository
 import br.com.unipar.exemplo.model.Pessoa
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -25,7 +27,27 @@ class PessoaController ( private val pessoaRepository : PessoaRepository){
     }
 
     @GetMapping
-    fun listarPessoa() : List<Pessoa>{
-        return pessoaRepository.findAll()
+    fun buscarPessoas() : ResponseEntity<List<Pessoa>>{
+        return ResponseEntity.ok(pessoaRepository.findAll())
     }
+    @GetMapping("/{id}")
+    fun buscarId(@PathVariable id : Long) : ResponseEntity<Pessoa>{
+        val pessoa : Pessoa = pessoaRepository.findById(id).get()
+        return if (pessoa != null){
+            ResponseEntity.ok(pessoa)
+        }else{
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    fun excluirPessoa(@PathVariable id : Long) : ResponseEntity<Void>{
+            val pessoa = pessoaRepository.deleteById(id)
+            return if (pessoa != null){
+                ResponseEntity.noContent().build()
+            }else{
+                ResponseEntity.notFound().build()
+            }
+    }
+
 }
