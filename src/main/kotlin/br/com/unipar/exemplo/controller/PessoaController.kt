@@ -4,6 +4,7 @@ import br.com.unipar.exemplo.database.PessoaRepository
 import br.com.unipar.exemplo.model.Pessoa
 import org.apache.coyote.Response
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 //A anotação Restcontroller não pode usar VIEW, basicamenteo é para construir APIs
 //a anotação Controler permite ter VIEW, para construir Web Applications
+@CrossOrigin (origins =  ["http://localhost:5173/"])
 @RestController
 @RequestMapping("/pessoa")
 class PessoaController ( private val pessoaRepository : PessoaRepository){
