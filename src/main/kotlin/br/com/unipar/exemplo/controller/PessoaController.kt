@@ -2,11 +2,13 @@ package br.com.unipar.exemplo.controller
 
 import br.com.unipar.exemplo.database.PessoaRepository
 import br.com.unipar.exemplo.model.Pessoa
+import org.apache.coyote.Response
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -32,9 +34,9 @@ class PessoaController ( private val pessoaRepository : PessoaRepository){
     }
     @GetMapping("/{id}")
     fun buscarId(@PathVariable id : Long) : ResponseEntity<Pessoa>{
-        val pessoa : Pessoa = pessoaRepository.findById(id).get()
-        return if (pessoa != null){
-            ResponseEntity.ok(pessoa)
+        val pessoa = pessoaRepository.findById(id)
+        return if (pessoa.isPresent){
+            ResponseEntity.ok(pessoa.get())
         }else{
             ResponseEntity.notFound().build()
         }
@@ -42,12 +44,28 @@ class PessoaController ( private val pessoaRepository : PessoaRepository){
 
     @DeleteMapping("/{id}")
     fun excluirPessoa(@PathVariable id : Long) : ResponseEntity<Void>{
-            val pessoa = pessoaRepository.deleteById(id)
-            return if (pessoa != null){
+            return if (pessoaRepository.existsById(id)){
+                pessoaRepository.deleteById(id)
                 ResponseEntity.noContent().build()
             }else{
                 ResponseEntity.notFound().build()
             }
+    }
+
+    @PutMapping("/{id}")
+    fun atualizarPessoa(@PathVariable id: Long, @RequestBody novaPessoa : Pessoa )
+    : ResponseEntity<Pessoa>{
+        return pessoaRepository.findById(id).map { pessoa ->
+            val pessoaAtualizada = pessoa.copy(
+                nome = novaPessoa.nome,
+                idade = novaPessoa.idade,
+                cpf = novaPessoa.cpf
+            )
+            ResponseEntity.ok(pessoaRepository.save(pessoaAtualizada))
+        }.orElse(
+            ResponseEntity.notFound().build()
+        )
+
     }
 
 }
